@@ -7,6 +7,7 @@ import {
   UseGuards,
   Request,
   Body,
+  Param,
   BadRequestException,
 } from '@nestjs/common'
 import { EventService } from './event.service'
@@ -52,5 +53,10 @@ export class EventController {
     } else {
       throw new BadRequestException('Could not remove event')
     }
+  }
+
+  @Get(':id')
+  async getEventById(@Param('id') id: number) {
+    return this.eventService.getEventById(id)
   }
 }

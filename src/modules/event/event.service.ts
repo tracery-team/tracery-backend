@@ -81,4 +81,16 @@ export class EventService {
 
     return true
   }
+
+  async getEventById(eventId: number) {
+    const event = await this.eventRepository.findOne({
+      where: { id: eventId },
+    })
+
+    if (!event) {
+      return null
+    }
+
+    return event
+  }
 }
