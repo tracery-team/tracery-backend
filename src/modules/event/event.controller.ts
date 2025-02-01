@@ -40,7 +40,7 @@ export class EventController {
     }
   }
 
-  @Delete('remove/:id')
+  @Delete('remove')
   @UseGuards(AuthGuard)
   async removeEvent(@Request() request, @Body('eventId') eventId: number) {
     const userId = request.user.sub
