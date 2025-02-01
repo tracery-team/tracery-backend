@@ -1,5 +1,15 @@
-import { Controller, Get, Query, Post, Body, Delete } from '@nestjs/common'
+import {
+  Controller,
+  Get,
+  Query,
+  Post,
+  Body,
+  Delete,
+  UseGuards,
+  Request,
+} from '@nestjs/common'
 import { UserService } from './user.service'
+import { AuthGuard } from '../auth/auth.guard'
 
 @Controller('user')
 export class UserController {
@@ -14,16 +24,32 @@ export class UserController {
   }
 
   @Post('add-friend')
-  async addFriend(@Body() body: { userId: number; friendId: number }) {
-    const { userId, friendId } = body
-    await this.userService.addFriend(userId, friendId)
-    return { message: 'Friend added successfully' }
+  @UseGuards(AuthGuard)
+  async addFriend(@Request() request, @Body() body: { friendId: number }) {
+    const userId = request.user.sub
+    const { friendId } = body
+
+    const result = await this.userService.addFriend(userId, friendId)
+
+    if (result) {
+      return { message: 'Friend added successfully' }
+    } else {
+      throw new Error('Could not add friend')
+    }
   }
 
   @Delete('remove-friend')
-  async removeFriend(@Body() body: { userId: number; friendId: number }) {
-    const { userId, friendId } = body
-    await this.userService.removeFriend(userId, friendId)
-    return { message: 'Friend removed successfully' }
+  @UseGuards(AuthGuard)
+  async removeFriend(@Request() request, @Body() body: { friendId: number }) {
+    const userId = request.user.sub
+    const { friendId } = body
+
+    const result = await this.userService.removeFriend(userId, friendId)
+
+    if (result) {
+      return { message: 'Friend removed successfully' }
+    } else {
+      throw new Error('Could not remove friend')
+    }
   }
 }

@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm'
+import { Column, Entity, PrimaryGeneratedColumn, ManyToMany } from 'typeorm'
+import { UserEntity } from 'src/data/user.entity'
 
 @Entity()
 export class EventEntity {
@@ -16,4 +17,7 @@ export class EventEntity {
 
   @Column({ type: 'timestamptz' })
   date: Date
+
+  @ManyToMany(() => UserEntity, user => user.events)
+  users: UserEntity[]
 }
