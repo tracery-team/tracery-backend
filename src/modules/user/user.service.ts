@@ -12,7 +12,7 @@ export class UserService {
     private userRepository: Repository<UserEntity>,
   ) {}
 
-  async searchFriends(page: number, search?: string): Promise<UserEntity[]> {
+  async searchFriends(page: number, search?: string) {
     const skip = (page - 1) * PAGE_SIZE
 
     const users = await this.userRepository.find()
@@ -38,7 +38,7 @@ export class UserService {
     return paginatedUsers
   }
 
-  async addFriend(userId: number, friendId: number): Promise<boolean> {
+  async addFriend(userId: number, friendId: number) {
     const user = await this.userRepository.findOne({
       where: { id: userId },
       relations: ['friends'],
@@ -57,7 +57,7 @@ export class UserService {
     return true
   }
 
-  async removeFriend(userId: number, friendId: number): Promise<boolean> {
+  async removeFriend(userId: number, friendId: number) {
     const user = await this.userRepository.findOne({
       where: { id: userId },
       relations: ['friends'],
