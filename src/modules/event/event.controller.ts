@@ -7,7 +7,6 @@ import {
   UseGuards,
   Request,
   Body,
-  Param,
   BadRequestException,
 } from '@nestjs/common'
 import { EventService } from './event.service'
@@ -29,7 +28,7 @@ export class EventController {
 
   @Post('add')
   @UseGuards(AuthGuard)
-  async addEvent(@Request() request, @Body() eventId: number) {
+  async addEvent(@Request() request, @Body('eventId') eventId: number) {
     const userId = request.user.sub
 
     const result = await this.eventService.addEvent(userId, eventId)
@@ -43,7 +42,7 @@ export class EventController {
 
   @Delete('remove/:id')
   @UseGuards(AuthGuard)
-  async removeEvent(@Request() request, @Param('id') eventId: number) {
+  async removeEvent(@Request() request, @Body('eventId') eventId: number) {
     const userId = request.user.sub
 
     const result = await this.eventService.removeEvent(userId, eventId)
