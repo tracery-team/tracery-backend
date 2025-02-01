@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
 import { UserEntity } from 'src/data/user.entity'
-import { levenshtein } from 'src/levenshtein'
+import { applySearch, levenshtein } from 'src/levenshtein'
 import { PAGE_SIZE } from 'src/constants'
 
 @Injectable()
@@ -21,23 +21,17 @@ export class UserService {
       return users.slice(skip, skip + PAGE_SIZE)
     }
 
-    const filteredUsers = users
-      .map(user => {
-        const userEntity = { ...user }
-        const nicknameDistance = levenshtein(
-          search.toLowerCase(),
-          user.nickname.toLowerCase(),
-        )
-
-        const userWithDistance = {
-          ...userEntity,
-          distance: nicknameDistance,
-        }
-
-        return userWithDistance
-      })
-      .filter(user => user.distance <= 2)
-      .sort((a, b) => a.distance - b.distance)
+    const filteredUsers = applySearch(users, user => {
+      const distanceNickaname = levenshtein(
+        search.toLowerCase(),
+        user.nickname.toLowerCase(),
+      )
+      const distanceEmail = levenshtein(
+        search.toLowerCase(),
+        user.email.toLowerCase(),
+      )
+      return Math.min(distanceNickaname, distanceEmail)
+    })
 
     const paginatedUsers = filteredUsers.slice(skip, skip + PAGE_SIZE)
 

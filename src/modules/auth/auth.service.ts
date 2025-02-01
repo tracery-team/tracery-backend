@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common'
+import { JwtService } from '@nestjs/jwt'
 import { InjectRepository } from '@nestjs/typeorm'
 import { UserEntity } from 'src/data/user.entity'
 import { QueryFailedError, Repository } from 'typeorm'
@@ -16,9 +17,10 @@ export class AuthService {
   constructor(
     @InjectRepository(UserEntity)
     private userRepository: Repository<UserEntity>,
+    private jwtService: JwtService,
   ) {}
 
-  async signUp(userData: Omit<UserEntity, 'id'>): Promise<SignupStatus> {
+  async signUp(userData: Partial<UserEntity>): Promise<SignupStatus> {
     try {
       const newUser = this.userRepository.create(userData)
       await this.userRepository.save(newUser)
@@ -33,7 +35,22 @@ export class AuthService {
 
   // returns JWT token
   async login(login: string, password: string): Promise<TokenJWT | null> {
-    // TODO:
-    return null
+    const user = await this.userRepository.findOne({
+      where: [{ email: login }, { nickname: login }],
+    })
+    if (user === null) {
+      return null
+    }
+    const verdict = await user.validatePassword(password)
+    if (!verdict) {
+      return null
+    }
+    const payload = {
+      sub: user.id,
+      email: user.email,
+      nickname: user.nickname,
+    }
+    const token = await this.jwtService.signAsync(payload)
+    return token
   }
 }

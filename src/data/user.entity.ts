@@ -1,10 +1,13 @@
 import {
+  BeforeInsert,
+  BeforeUpdate,
   Column,
   Entity,
   PrimaryGeneratedColumn,
   ManyToMany,
   JoinTable,
 } from 'typeorm'
+import * as bcrypt from 'bcrypt'
 
 @Entity()
 export class UserEntity {
@@ -29,4 +32,15 @@ export class UserEntity {
   @ManyToMany(() => UserEntity, user => user.friends)
   @JoinTable()
   friends: UserEntity[]
+
+  @BeforeInsert()
+  @BeforeUpdate()
+  async hashPassword() {
+    const salt = await bcrypt.genSalt(10)
+    this.password = await bcrypt.hash(this.password, salt)
+  }
+
+  validatePassword(inputPassword: string): Promise<boolean> {
+    return bcrypt.compare(inputPassword, this.password)
+  }
 }
