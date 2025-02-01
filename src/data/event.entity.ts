@@ -6,7 +6,7 @@ export class EventEntity {
   id: number
 
   @Column({ unique: true })
-  name: string
+  title: string
 
   @Column()
   description: string

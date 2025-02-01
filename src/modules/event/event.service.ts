@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
 import { EventEntity } from 'src/data/event.entity'
+import { levenshtein } from 'src/levenshtein'
+const PAGE_SIZE = 10
 
 @Injectable()
 export class EventService {
@@ -10,81 +12,42 @@ export class EventService {
     private eventRepository: Repository<EventEntity>,
   ) {}
 
-  async searchEvents(page: number, search: string): Promise<EventEntity[]> {
-    const pageSize = 10
-    const skipPage = (page - 1) * pageSize
+  async searchEvents(page: number, search?: string): Promise<EventEntity[]> {
+    const skipPage = (page - 1) * PAGE_SIZE
 
     const events = await this.eventRepository.find()
 
+    if (!search) {
+      return events.slice(skipPage, skipPage + PAGE_SIZE)
+    }
+
     const filteredEvents = events
       .map(event => {
-        const nameDistance = this.levenshtein(
+        const eventEntity = { ...event }
+        const nameDistance = levenshtein(
           search.toLowerCase(),
-          event.name.toLowerCase(),
+          event.title.toLowerCase(),
         )
 
-        const dateDistance = this.levenshtein(
+        const dateDistance = levenshtein(
           search.toLowerCase(),
           event.date.toISOString().toLowerCase(),
         )
 
         const minDistance = Math.min(nameDistance, dateDistance)
 
-        return {
-          id: event.id,
-          name: event.name,
-          description: event.description,
-          location: event.location,
-          date: event.date,
+        const eventWithDistance = {
+          ...eventEntity,
           distance: minDistance,
         }
+
+        return eventWithDistance
       })
       .filter(event => event.distance <= 2)
       .sort((a, b) => a.distance - b.distance)
 
-    const paginatedEvents = filteredEvents.slice(skipPage, skipPage + pageSize)
+    const paginatedEvents = filteredEvents.slice(skipPage, skipPage + PAGE_SIZE)
 
     return paginatedEvents
-  }
-
-  private levenshtein(s1: string, s2: string): number {
-    if (s1 === s2) {
-      return 0
-    }
-
-    const s1_len = s1.length
-    const s2_len = s2.length
-    if (s1_len === 0) {
-      return s2_len
-    }
-    if (s2_len === 0) {
-      return s1_len
-    }
-
-    // Create arrays for dynamic programming
-    let v0 = new Array(s1_len + 1)
-    let v1 = new Array(s1_len + 1)
-
-    // Initialize v0 array
-    for (let i = 0; i < s1_len + 1; i++) {
-      v0[i] = i
-    }
-
-    for (let j = 1; j <= s2_len; j++) {
-      v1[0] = j
-      const char_s2 = s2[j - 1]
-
-      for (let i = 0; i < s1_len; i++) {
-        const char_s1 = s1[i]
-        const cost = char_s1 === char_s2 ? 0 : 1
-        const m_min = Math.min(v0[i + 1] + 1, v1[i] + 1, v0[i] + cost)
-        v1[i + 1] = m_min
-      }
-
-      // Swap v0 and v1
-      ;[v0, v1] = [v1, v0]
-    }
-
-    return v0[s1_len]
   }
 }
