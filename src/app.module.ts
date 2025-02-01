@@ -3,6 +3,8 @@ import { AuthModule } from './modules/auth/auth.module'
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { UserEntity } from './data/user.entity'
 import { ProfileModule } from './modules/profile/profile.module'
+import { EventModule } from './modules/event/event.module'
+import { UserModule } from './modules/user/user.module'
 
 @Module({
   imports: [
@@ -17,6 +19,8 @@ import { ProfileModule } from './modules/profile/profile.module'
       synchronize: true, // TODO: migrations
     }),
     AuthModule,
+    EventModule,
+    UserModule,
     ProfileModule,
   ],
 })
