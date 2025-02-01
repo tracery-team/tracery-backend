@@ -8,6 +8,7 @@ import {
   Request,
   Body,
   Param,
+  BadRequestException,
 } from '@nestjs/common'
 import { EventService } from './event.service'
 import { AuthGuard } from '../auth/auth.guard'
@@ -36,7 +37,7 @@ export class EventController {
     if (result) {
       return { message: 'Event added successfully' }
     } else {
-      throw new Error('Could not add event')
+      throw new BadRequestException('Could not add event')
     }
   }
 
@@ -50,7 +51,7 @@ export class EventController {
     if (result) {
       return { message: 'Event removed successfully' }
     } else {
-      throw new Error('Could not remove event')
+      throw new BadRequestException('Could not remove event')
     }
   }
 }

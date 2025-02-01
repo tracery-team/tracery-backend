@@ -7,6 +7,7 @@ import {
   Delete,
   UseGuards,
   Request,
+  BadRequestException,
 } from '@nestjs/common'
 import { UserService } from './user.service'
 import { AuthGuard } from '../auth/auth.guard'
@@ -25,31 +26,29 @@ export class UserController {
 
   @Post('add-friend')
   @UseGuards(AuthGuard)
-  async addFriend(@Request() request, @Body() body: { friendId: number }) {
+  async addFriend(@Request() request, @Body('friendId') friendId: number) {
     const userId = request.user.sub
-    const { friendId } = body
 
     const result = await this.userService.addFriend(userId, friendId)
 
     if (result) {
       return { message: 'Friend added successfully' }
     } else {
-      throw new Error('Could not add friend')
+      throw new BadRequestException('Could not add friend')
     }
   }
 
   @Delete('remove-friend')
   @UseGuards(AuthGuard)
-  async removeFriend(@Request() request, @Body() body: { friendId: number }) {
+  async removeFriend(@Request() request, @Body('friendId') friendId: number) {
     const userId = request.user.sub
-    const { friendId } = body
 
     const result = await this.userService.removeFriend(userId, friendId)
 
     if (result) {
       return { message: 'Friend removed successfully' }
     } else {
-      throw new Error('Could not remove friend')
+      throw new BadRequestException('Could not remove friend')
     }
   }
 }

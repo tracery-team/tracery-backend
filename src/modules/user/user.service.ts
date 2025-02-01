@@ -48,7 +48,7 @@ export class UserService {
     })
 
     if (!user || !friend) {
-      throw new Error('User or Friend not found')
+      return false
     }
 
     user.friends.push(friend)
@@ -67,7 +67,7 @@ export class UserService {
     })
 
     if (!user || !friend) {
-      throw new Error('User or Friend not found')
+      return false
     }
 
     user.friends = user.friends.filter(f => f.id !== friendId)
