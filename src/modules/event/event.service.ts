@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
 import { EventEntity } from 'src/data/event.entity'
-import { levenshtein } from 'src/levenshtein'
-const PAGE_SIZE = 10
+import { applySearch, levenshtein } from 'src/levenshtein'
+import { PAGE_SIZE } from 'src/constants'
 
 @Injectable()
 export class EventService {
@@ -21,30 +21,17 @@ export class EventService {
       return events.slice(skipPage, skipPage + PAGE_SIZE)
     }
 
-    const filteredEvents = events
-      .map(event => {
-        const eventEntity = { ...event }
-        const nameDistance = levenshtein(
-          search.toLowerCase(),
-          event.title.toLowerCase(),
-        )
-
-        const dateDistance = levenshtein(
-          search.toLowerCase(),
-          event.date.toISOString().toLowerCase(),
-        )
-
-        const minDistance = Math.min(nameDistance, dateDistance)
-
-        const eventWithDistance = {
-          ...eventEntity,
-          distance: minDistance,
-        }
-
-        return eventWithDistance
-      })
-      .filter(event => event.distance <= 2)
-      .sort((a, b) => a.distance - b.distance)
+    const filteredEvents = applySearch(events, event => {
+      const nameDistance = levenshtein(
+        search.toLowerCase(),
+        event.title.toLowerCase(),
+      )
+      const dateDistance = levenshtein(
+        search.toLowerCase(),
+        event.date.toISOString().toLowerCase(),
+      )
+      return Math.min(nameDistance, dateDistance)
+    })
 
     const paginatedEvents = filteredEvents.slice(skipPage, skipPage + PAGE_SIZE)
 

@@ -35,3 +35,22 @@ export function levenshtein(s1: string, s2: string): number {
 
   return v0[s1_len]
 }
+
+export const applySearch = <T>(
+  elements: T[],
+  distanceFn: (element: T) => number,
+  maxDistance: number = 2,
+) => {
+  return elements
+    .map(element => {
+      return Object.freeze({
+        element,
+        distance: distanceFn(element),
+      })
+    })
+    .filter(({ distance }) => distance <= maxDistance)
+    .sort(({ distance: distanceA, distance: distanceB }) => {
+      return distanceA - distanceB
+    })
+    .map(({ element }) => element)
+}

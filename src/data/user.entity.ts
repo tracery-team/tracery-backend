@@ -4,6 +4,8 @@ import {
   Column,
   Entity,
   PrimaryGeneratedColumn,
+  ManyToMany,
+  JoinTable,
 } from 'typeorm'
 import * as bcrypt from 'bcrypt'
 
@@ -26,6 +28,10 @@ export class UserEntity {
 
   @Column()
   password: string
+
+  @ManyToMany(() => UserEntity, user => user.friends)
+  @JoinTable()
+  friends: UserEntity[]
 
   @BeforeInsert()
   @BeforeUpdate()
