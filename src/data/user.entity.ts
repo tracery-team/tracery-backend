@@ -8,6 +8,7 @@ import {
   JoinTable,
 } from 'typeorm'
 import * as bcrypt from 'bcrypt'
+import { EventEntity } from 'src/data/event.entity'
 
 @Entity()
 export class UserEntity {
@@ -32,6 +33,10 @@ export class UserEntity {
   @ManyToMany(() => UserEntity, user => user.friends)
   @JoinTable()
   friends: UserEntity[]
+
+  @ManyToMany(() => EventEntity, event => event.users)
+  @JoinTable()
+  events: EventEntity[]
 
   @BeforeInsert()
   @BeforeUpdate()

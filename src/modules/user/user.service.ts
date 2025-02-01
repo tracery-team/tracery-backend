@@ -38,7 +38,7 @@ export class UserService {
     return paginatedUsers
   }
 
-  async addFriend(userId: number, friendId: number): Promise<void> {
+  async addFriend(userId: number, friendId: number): Promise<boolean> {
     const user = await this.userRepository.findOne({
       where: { id: userId },
       relations: ['friends'],
@@ -48,14 +48,16 @@ export class UserService {
     })
 
     if (!user || !friend) {
-      throw new Error('User or Friend not found')
+      return false
     }
 
     user.friends.push(friend)
     await this.userRepository.save(user)
+
+    return true
   }
 
-  async removeFriend(userId: number, friendId: number): Promise<void> {
+  async removeFriend(userId: number, friendId: number): Promise<boolean> {
     const user = await this.userRepository.findOne({
       where: { id: userId },
       relations: ['friends'],
@@ -65,10 +67,12 @@ export class UserService {
     })
 
     if (!user || !friend) {
-      throw new Error('User or Friend not found')
+      return false
     }
 
     user.friends = user.friends.filter(f => f.id !== friendId)
     await this.userRepository.save(user)
+
+    return true
   }
 }
