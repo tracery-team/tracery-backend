@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
 import { EventEntity } from 'src/data/event.entity'
 import { levenshtein } from 'src/levenshtein'
-const PAGE_SIZE = 10
+import { PAGE_SIZE } from 'src/constants'
 
 @Injectable()
 export class EventService {

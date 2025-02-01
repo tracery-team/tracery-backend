@@ -1,4 +1,10 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm'
+import {
+  Column,
+  Entity,
+  PrimaryGeneratedColumn,
+  ManyToMany,
+  JoinTable,
+} from 'typeorm'
 
 @Entity()
 export class UserEntity {
@@ -19,4 +25,8 @@ export class UserEntity {
 
   @Column()
   password: string
+
+  @ManyToMany(() => UserEntity, user => user.friends)
+  @JoinTable()
+  friends: UserEntity[]
 }
