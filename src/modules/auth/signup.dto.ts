@@ -1,6 +1,5 @@
 import {
   IsAlpha,
-  IsAlphanumeric,
   IsEmail,
   IsNotEmpty,
   IsStrongPassword,
@@ -10,10 +9,10 @@ import {
 
 export class SignUpDto {
   @IsNotEmpty()
-  @IsAlphanumeric()
-  @Matches(/^[_a-zA-Z].*$/, {
+  @Matches(/^[_a-zA-Z][_a-zA-Z0-9]*$/, {
     message: 'nickname must start with a letter or an underscore',
   })
+  @Length(4, 25)
   nickname: string
 
   @IsNotEmpty()

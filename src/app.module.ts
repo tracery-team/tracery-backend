@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common'
 import { AuthModule } from './modules/auth/auth.module'
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { UserEntity } from './data/user.entity'
+import { ProfileModule } from './modules/profile/profile.module'
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { UserEntity } from './data/user.entity'
       synchronize: true, // TODO: migrations
     }),
     AuthModule,
+    ProfileModule,
   ],
 })
 export class AppModule {}
