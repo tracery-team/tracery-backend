@@ -14,7 +14,7 @@ export class ProfileService {
   async getUserInfo(userId: number): Promise<UserEntity | null> {
     const user = await this.userRepository.findOne({
       where: { id: userId },
-      relations: ['friends'], // TODO: add events later
+      relations: ['friends', 'events'],
     })
     return plainToInstance(UserEntity, user)
   }

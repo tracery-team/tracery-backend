@@ -27,13 +27,16 @@ export class EventService {
       where: { id },
       relations: ['users'],
     })
-    return plainToInstance(EventDto, event, { excludeExtraneousValues: true })
+    // return plainToInstance(EventDto, event, { excludeExtraneousValues: true })
+    return event
   }
 
   async searchEvents(page: number, search?: string) {
     const skipPage = (page - 1) * PAGE_SIZE
 
-    const events = await this.eventRepository.find()
+    const events = await this.eventRepository.find({
+      relations: ['users'],
+    })
 
     if (!search) {
       return events.slice(skipPage, skipPage + PAGE_SIZE)
@@ -100,6 +103,7 @@ export class EventService {
   async getEventById(eventId: number) {
     const event = await this.eventRepository.findOne({
       where: { id: eventId },
+      relations: ['users'],
     })
 
     if (!event) {

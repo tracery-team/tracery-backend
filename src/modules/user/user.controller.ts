@@ -8,6 +8,8 @@ import {
   UseGuards,
   Request,
   BadRequestException,
+  NotFoundException,
+  Param,
 } from '@nestjs/common'
 import { UserService } from './user.service'
 import { AuthGuard, AuthorizedRequest } from '../auth/auth.guard'
@@ -15,6 +17,15 @@ import { AuthGuard, AuthorizedRequest } from '../auth/auth.guard'
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
+
+  @Get('/info/:id')
+  async getUser(@Param('id') id: number) {
+    const user = await this.userService.findOne(id)
+    if (!user) {
+      throw new NotFoundException()
+    }
+    return user
+  }
 
   @Get('friends')
   async searchFriends(

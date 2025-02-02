@@ -18,7 +18,8 @@ export class UserService {
     const users = await this.userRepository.find({
       relations: ['friends', 'events'],
     })
-    return plainToInstance(UserDto, users, { excludeExtraneousValues: true })
+    // return plainToInstance(UserDto, users, { excludeExtraneousValues: true })
+    return users
   }
 
   async findOne(id: number): Promise<UserDto> {
@@ -27,7 +28,8 @@ export class UserService {
       relations: ['friends', 'events'],
     })
 
-    return plainToInstance(UserDto, user, { excludeExtraneousValues: true })
+    // return plainToInstance(UserDto, user, { excludeExtraneousValues: true })
+    return user
   }
 
   async searchFriends(page: number, search?: string) {

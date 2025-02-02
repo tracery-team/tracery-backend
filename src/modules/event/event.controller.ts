@@ -63,6 +63,6 @@ export class EventController {
 
   @Get(':id')
   async getEventById(@Param('id') id: number) {
-    return this.eventService.getEventById(id)
+    return await this.eventService.getEventById(id)
   }
 }
