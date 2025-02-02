@@ -30,7 +30,8 @@ export class UserService {
         search.toLowerCase(),
         user.email.toLowerCase(),
       )
-      return Math.min(distanceNickaname, distanceEmail)
+      const minDistance = Math.min(distanceNickaname, distanceEmail)
+      return minDistance
     })
 
     const paginatedUsers = filteredUsers.slice(skip, skip + PAGE_SIZE)
