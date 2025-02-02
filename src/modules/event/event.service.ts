@@ -15,7 +15,7 @@ export class EventService {
     private userRepository: Repository<UserEntity>,
   ) {}
 
-  async searchEvents(page: number, search?: string): Promise<EventEntity[]> {
+  async searchEvents(page: number, search?: string) {
     const skipPage = (page - 1) * PAGE_SIZE
 
     const events = await this.eventRepository.find()
@@ -41,7 +41,7 @@ export class EventService {
     return paginatedEvents
   }
 
-  async addEvent(userId: number, eventId: number): Promise<boolean> {
+  async addEvent(userId: number, eventId: number) {
     const user = await this.userRepository.findOne({
       where: { id: userId },
       relations: ['events'],
@@ -65,7 +65,7 @@ export class EventService {
     return true
   }
 
-  async removeEvent(userId: number, eventId: number): Promise<boolean> {
+  async removeEvent(userId: number, eventId: number) {
     const user = await this.userRepository.findOne({
       where: { id: userId },
       relations: ['events'],
