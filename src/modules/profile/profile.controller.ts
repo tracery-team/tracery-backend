@@ -1,14 +1,17 @@
-import { Controller, Get, NotFoundException, Request, UseGuards } from '@nestjs/common'
+import {
+  Controller,
+  Get,
+  NotFoundException,
+  Request,
+  UseGuards,
+} from '@nestjs/common'
 import { AuthGuard, AuthorizedRequest } from '../auth/auth.guard'
-import {ProfileService} from './profile.service'
+import { ProfileService } from './profile.service'
 
 @Controller('profile')
 @UseGuards(AuthGuard)
 export class ProfileController {
-
-  constructor (
-    private profileService: ProfileService,
-  ) {}
+  constructor(private profileService: ProfileService) {}
 
   @Get('/')
   async mainInfo(@Request() request: AuthorizedRequest) {
@@ -19,5 +22,4 @@ export class ProfileController {
     }
     return user
   }
-
 }

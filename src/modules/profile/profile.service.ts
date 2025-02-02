@@ -1,12 +1,12 @@
-import {Injectable} from "@nestjs/common";
-import {InjectRepository} from "@nestjs/typeorm";
-import {plainToInstance} from "class-transformer";
-import {UserEntity} from "src/data/user.entity";
-import {Repository} from "typeorm";
+import { Injectable } from '@nestjs/common'
+import { InjectRepository } from '@nestjs/typeorm'
+import { plainToInstance } from 'class-transformer'
+import { UserEntity } from 'src/data/user.entity'
+import { Repository } from 'typeorm'
 
 @Injectable()
 export class ProfileService {
-  constructor (
+  constructor(
     @InjectRepository(UserEntity)
     private userRepository: Repository<UserEntity>,
   ) {}
@@ -14,7 +14,7 @@ export class ProfileService {
   async getUserInfo(userId: number): Promise<UserEntity | null> {
     const user = await this.userRepository.findOne({
       where: { id: userId },
-      relations: [ 'friends' ], // TODO: add events later
+      relations: ['friends'], // TODO: add events later
     })
     return plainToInstance(UserEntity, user)
   }

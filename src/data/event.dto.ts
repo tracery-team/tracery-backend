@@ -1,4 +1,4 @@
-import { Exclude, Transform } from 'class-transformer'
+import { Transform } from 'class-transformer'
 import { UserDto } from './user.dto'
 
 export class EventDto {
