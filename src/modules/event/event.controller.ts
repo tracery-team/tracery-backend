@@ -11,7 +11,7 @@ import {
   BadRequestException,
 } from '@nestjs/common'
 import { EventService } from './event.service'
-import { AuthGuard } from '../auth/auth.guard'
+import { AuthGuard, AuthorizedRequest } from '../auth/auth.guard'
 
 @Controller('event')
 export class EventController {
@@ -29,8 +29,11 @@ export class EventController {
 
   @Post('add')
   @UseGuards(AuthGuard)
-  async addEvent(@Request() request, @Body('eventId') eventId: number) {
-    const userId = request.user.sub
+  async addEvent(
+    @Request() request: AuthorizedRequest,
+    @Body('eventId') eventId: number,
+  ) {
+    const userId = request.parsedToken.sub
 
     const result = await this.eventService.addEvent(userId, eventId)
 
@@ -43,8 +46,11 @@ export class EventController {
 
   @Delete('remove')
   @UseGuards(AuthGuard)
-  async removeEvent(@Request() request, @Body('eventId') eventId: number) {
-    const userId = request.user.sub
+  async removeEvent(
+    @Request() request: AuthorizedRequest,
+    @Body('eventId') eventId: number,
+  ) {
+    const userId = request.parsedToken.sub
 
     const result = await this.eventService.removeEvent(userId, eventId)
 

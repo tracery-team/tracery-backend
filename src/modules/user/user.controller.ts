@@ -10,7 +10,7 @@ import {
   BadRequestException,
 } from '@nestjs/common'
 import { UserService } from './user.service'
-import { AuthGuard } from '../auth/auth.guard'
+import { AuthGuard, AuthorizedRequest } from '../auth/auth.guard'
 
 @Controller('user')
 export class UserController {
@@ -26,10 +26,15 @@ export class UserController {
 
   @Post('add-friend')
   @UseGuards(AuthGuard)
-  async addFriend(@Request() request, @Body('friendId') friendId: number) {
-    const userId = request.user.sub
+  async addFriend(
+    @Request() request: AuthorizedRequest,
+    @Body('friendId') friendId: number,
+  ) {
+    const userId = request.parsedToken.sub
 
-    const result = await this.userService.addFriend(userId, friendId)
+    const result =
+      (await this.userService.addFriend(userId, friendId)) &&
+      (await this.userService.addFriend(friendId, userId))
 
     if (result) {
       return { message: 'Friend added successfully' }
@@ -40,10 +45,15 @@ export class UserController {
 
   @Delete('remove-friend')
   @UseGuards(AuthGuard)
-  async removeFriend(@Request() request, @Body('friendId') friendId: number) {
-    const userId = request.user.sub
+  async removeFriend(
+    @Request() request: AuthorizedRequest,
+    @Body('friendId') friendId: number,
+  ) {
+    const userId = request.parsedToken.sub
 
-    const result = await this.userService.removeFriend(userId, friendId)
+    const result =
+      (await this.userService.removeFriend(userId, friendId)) &&
+      (await this.userService.removeFriend(friendId, userId))
 
     if (result) {
       return { message: 'Friend removed successfully' }
