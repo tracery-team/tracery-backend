@@ -7,6 +7,15 @@ import { EventModule } from './modules/event/event.module'
 import { UserModule } from './modules/user/user.module'
 import { EventEntity } from './data/event.entity'
 
+/**
+ * The root module of the application.
+ *
+ * It imports essential modules such as authentication, event handling, user management,
+ * and profile services. It also configures the TypeORM connection to a PostgreSQL database
+ * using environment variables for database configuration.
+ *
+ * @module
+ */
 @Module({
   imports: [
     TypeOrmModule.forRoot({

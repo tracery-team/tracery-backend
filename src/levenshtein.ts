@@ -1,3 +1,10 @@
+/**
+ * Function that calculates the Levenshtein distance between two strings.
+ *
+ * @param {string} s1 - The first string.
+ * @param {string} s2 - The second string.
+ * @returns {number} - The Levenshtein distance between two strings.
+ */
 export function levenshtein(s1: string, s2: string): number {
   if (s1 === s2) {
     return 0
@@ -36,6 +43,16 @@ export function levenshtein(s1: string, s2: string): number {
   return v0[s1_len]
 }
 
+/**
+ * Function that filters and sorts an array based on a distance function,
+ * keeping elements within the specified maxDistance threshold.
+ *
+ * @template T
+ * @param {T[]} elements - The array of elements.
+ * @param {(element: T) => number} distanceFn - Function that computes the distance of an element.
+ * @param {number} maxDistance - The maximum allowed distance for an element to be included.
+ * @returns {T[]} - The filtered and sorted array of elements.
+ */
 export const applySearch = <T>(
   elements: T[],
   distanceFn: (element: T) => number,
