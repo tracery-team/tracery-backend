@@ -4,6 +4,8 @@ import { Repository } from 'typeorm'
 import { UserEntity } from 'src/data/user.entity'
 import { applySearch, levenshtein } from 'src/levenshtein'
 import { PAGE_SIZE } from 'src/constants'
+import { plainToInstance } from 'class-transformer'
+import { UserDto } from 'src/data/user.dto'
 
 @Injectable()
 export class UserService {
@@ -12,7 +14,23 @@ export class UserService {
     private userRepository: Repository<UserEntity>,
   ) {}
 
-  async searchFriends(page: number, search?: string): Promise<UserEntity[]> {
+  async findAll(): Promise<UserDto[]> {
+    const users = await this.userRepository.find({
+      relations: ['friends', 'events'],
+    })
+    return plainToInstance(UserDto, users, { excludeExtraneousValues: true })
+  }
+
+  async findOne(id: number): Promise<UserDto> {
+    const user = await this.userRepository.findOne({
+      where: { id },
+      relations: ['friends', 'events'],
+    })
+
+    return plainToInstance(UserDto, user, { excludeExtraneousValues: true })
+  }
+
+  async searchFriends(page: number, search?: string) {
     const skip = (page - 1) * PAGE_SIZE
 
     const users = await this.userRepository.find()
@@ -39,7 +57,7 @@ export class UserService {
     return paginatedUsers
   }
 
-  async addFriend(userId: number, friendId: number): Promise<void> {
+  async addFriend(userId: number, friendId: number) {
     const user = await this.userRepository.findOne({
       where: { id: userId },
       relations: ['friends'],
@@ -49,14 +67,16 @@ export class UserService {
     })
 
     if (!user || !friend) {
-      throw new Error('User or Friend not found')
+      return false
     }
 
     user.friends.push(friend)
     await this.userRepository.save(user)
+
+    return true
   }
 
-  async removeFriend(userId: number, friendId: number): Promise<void> {
+  async removeFriend(userId: number, friendId: number) {
     const user = await this.userRepository.findOne({
       where: { id: userId },
       relations: ['friends'],
@@ -66,10 +86,12 @@ export class UserService {
     })
 
     if (!user || !friend) {
-      throw new Error('User or Friend not found')
+      return false
     }
 
     user.friends = user.friends.filter(f => f.id !== friendId)
     await this.userRepository.save(user)
+
+    return true
   }
 }

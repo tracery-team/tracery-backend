@@ -8,7 +8,7 @@ import {
   JoinTable,
 } from 'typeorm'
 import * as bcrypt from 'bcrypt'
-import {Exclude} from 'class-transformer'
+import { EventEntity } from 'src/data/event.entity'
 
 @Entity()
 export class UserEntity {
@@ -27,13 +27,16 @@ export class UserEntity {
   @Column({ unique: true })
   email: string
 
-  @Exclude()
   @Column()
   password: string
 
   @ManyToMany(() => UserEntity, user => user.friends)
   @JoinTable()
   friends: UserEntity[]
+
+  @ManyToMany(() => EventEntity, event => event.users)
+  @JoinTable()
+  events: EventEntity[]
 
   @BeforeInsert()
   @BeforeUpdate()
