@@ -39,9 +39,9 @@ export function levenshtein(s1: string, s2: string): number {
 export const applySearch = <T>(
   elements: T[],
   distanceFn: (element: T) => number,
-  maxDistance: number = 2,
+  maxDistance: number = 20,
 ) => {
-  return elements
+  const filteredElements = elements
     .map(element => {
       return Object.freeze({
         element,
@@ -49,8 +49,9 @@ export const applySearch = <T>(
       })
     })
     .filter(({ distance }) => distance <= maxDistance)
-    .sort(({ distance: distanceA, distance: distanceB }) => {
-      return distanceA - distanceB
-    })
-    .map(({ element }) => element)
+  filteredElements.sort(({ distance: distanceA }, { distance: distanceB }) => {
+    const weight = distanceA - distanceB
+    return weight
+  })
+  return filteredElements.map(({ element }) => element)
 }
