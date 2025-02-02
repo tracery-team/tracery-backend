@@ -5,6 +5,8 @@ import { EventEntity } from 'src/data/event.entity'
 import { UserEntity } from 'src/data/user.entity'
 import { applySearch, levenshtein } from 'src/levenshtein'
 import { PAGE_SIZE } from 'src/constants'
+import { plainToInstance } from 'class-transformer'
+import { EventDto } from 'src/data/event.dto'
 
 @Injectable()
 export class EventService {
@@ -14,6 +16,19 @@ export class EventService {
     @InjectRepository(UserEntity)
     private userRepository: Repository<UserEntity>,
   ) {}
+
+  async findAll(): Promise<EventDto[]> {
+    const events = await this.eventRepository.find({ relations: ['users'] })
+    return plainToInstance(EventDto, events, { excludeExtraneousValues: true })
+  }
+
+  async findOne(id: number): Promise<EventDto> {
+    const event = await this.eventRepository.findOne({
+      where: { id },
+      relations: ['users'],
+    })
+    return plainToInstance(EventDto, event, { excludeExtraneousValues: true })
+  }
 
   async searchEvents(page: number, search?: string) {
     const skipPage = (page - 1) * PAGE_SIZE

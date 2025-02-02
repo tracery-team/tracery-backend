@@ -4,6 +4,8 @@ import { Repository } from 'typeorm'
 import { UserEntity } from 'src/data/user.entity'
 import { applySearch, levenshtein } from 'src/levenshtein'
 import { PAGE_SIZE } from 'src/constants'
+import { plainToInstance } from 'class-transformer'
+import { UserDto } from 'src/data/user.dto'
 
 @Injectable()
 export class UserService {
@@ -11,6 +13,22 @@ export class UserService {
     @InjectRepository(UserEntity)
     private userRepository: Repository<UserEntity>,
   ) {}
+
+  async findAll(): Promise<UserDto[]> {
+    const users = await this.userRepository.find({
+      relations: ['friends', 'events'],
+    })
+    return plainToInstance(UserDto, users, { excludeExtraneousValues: true })
+  }
+
+  async findOne(id: number): Promise<UserDto> {
+    const user = await this.userRepository.findOne({
+      where: { id },
+      relations: ['friends', 'events'],
+    })
+
+    return plainToInstance(UserDto, user, { excludeExtraneousValues: true })
+  }
 
   async searchFriends(page: number, search?: string) {
     const skip = (page - 1) * PAGE_SIZE
